@@ -1,0 +1,98 @@
+﻿@model _18_Jun_2021.Models.Extended.UserLogin
+@{
+    ViewBag.Title = "Login";
+    Layout = "~/Views/_LayoutPage1.cshtml";
+    <link href="~/css/main.css" rel="stylesheet" />
+    <link href="~/css/util.css" rel="stylesheet" />
+}
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="limiter">
+        <hr />
+
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="container-login100" style="background-image: url('../../images/bg-01.jpg'); " />
+
+
+
+
+        <div class="wrap-login100">
+            <form action="Login" method="post" class="login100-form validate-form">
+                <center>
+                    <span class="">
+                        <img src="~/images/icons/Icon RM.ico" />
+                        <i class="zmdi-landscape"></i>
+                    </span>
+                </center>
+
+                <span class="login100-form-title p-b-34 p-t-27">
+                    Log in
+                </span>
+
+                <div class="wrap-input100 validate-input">
+                    @Html.TextBox("Name", null, new { @class = "input100", @placeholder = "Name", @data_val = "true"})
+                    <span class="focus-input100" data-valmsg-for="Name" data-valmsg-replace="true" data-placeholder="&#xf207;"></span>
+                </div>
+
+                <div class="wrap-input100 validate-input">
+                    @Html.Password("Password", null, new { @class = "input100", @placeholder = "Password", @data_val = "true"})
+                    <span class="focus-input100" data-valmsg-for="Password" data-valmsg-replace="true" data-placeholder="&#xf207;"></span>
+                </div>
+
+                <div class="contact100-form-checkbox">
+                    <input class="input-checkbox100" id="RememberMe" type="checkbox" name="RememberMe" value="true">
+                    <label class="label-checkbox100" for="RememberMe">
+                        Remember Me
+                    </label>
+                </div>
+
+                <div class="container-login100-form-btn">
+                    <button class="login100-form-btn">
+                        Login
+                    </button>
+                </div>
+
+                <div class="text-center p-t-90">
+                    <a class="txt1" href="#">
+                        Forgot Password?
+                    </a>
+                </div>
+            </form>
+            <div>
+                @Html.ActionLink("Register", "Register", "Account")
+                @if (ViewBag.Message != "")
+                {
+                    <div class="text-danger">@ViewBag.Message</div>
+                }
+            </div>
+        </div>
+    </div>
+
+
+    <script src="~/Scripts/jquery-3.4.1.js"></script>
+    <script src="~/Scripts/jquery.validate-vsdoc.js"></script>
+    <script src="~/Scripts/jquery.validate.js"></script>
+    <script src="~/Scripts/jquery.validate.min.js"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.js"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+    <!--===============================================================================================-->
+    <script src="~/vendor/jquery/jquery-3.2.1.min.js"></script>
+    <!--===============================================================================================-->
+    <script src="~/vendor/animsition/js/animsition.min.js"></script>
+    <!--===============================================================================================-->
+    <script src="~/vendor/bootstrap/js/popper.js"></script>
+    <script src="~/vendor/bootstrap/js/bootstrap.min.js"></script>
+    <!--===============================================================================================-->
+    <script src="~/vendor/select2/select2.min.js"></script>
+    <!--===============================================================================================-->
+    <script src="~/vendor/daterangepicker/moment.min.js"></script>
+    <script src="~/vendor/daterangepicker/daterangepicker.js"></script>
+    <!--===============================================================================================-->
+    <script src="~/vendor/countdowntime/countdowntime.js"></script>
+    <!--===============================================================================================-->
+    <script src="~/js/main.js"></script>
+
+}

@@ -1,0 +1,14 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+}
+
+
+@*Welcome @HttpContext.Current.User.Identity.Name*@
+@if (Request.IsAuthenticated)
+{
+    using (Html.BeginForm("SendMessage", "Account", FormMethod.Post, new { id = "SendMessageForm" }))
+    {
+        <a href="javascript:document.getElementById('SendMessageForm').submit()">SendMessage</a>
+    }
+}
