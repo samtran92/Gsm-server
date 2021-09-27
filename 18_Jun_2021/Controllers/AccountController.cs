@@ -160,6 +160,7 @@ namespace _18_Jun_2021.Controllers
         #endregion
 
         #region Send message to Serial Port
+
         #region Variable and Fuction for Serial connection
         enum MsgCmd_en
         {
@@ -201,8 +202,64 @@ namespace _18_Jun_2021.Controllers
             {
                 GMSDevice.totalPCPorts = GMSDevice.listPCPorts.Length;
             }
+            configGMS();
+            SendMessage();
         }
+
         #region Initilize the connection to your GMS device first
+
+        public void configGMS()
+        {
+            serialPort.WriteLine("AT+CMGF=1"); // Set mode to Text(1) or PDU(0)
+            Thread.Sleep(1000); // Give a second to write
+            serialPort.WriteLine("AT+CPMS=\"SM\""); // Set storage to SIM(SM)
+            Thread.Sleep(1000);
+            serialPort.WriteLine("AT+CMGR=1");
+            Thread.Sleep(1000);
+            serialPort.WriteLine("AT+CMGL=\"ALL\""); // What category to read ALL, REC READ, or REC UNREAD
+            Thread.Sleep(1000);
+            serialPort.Write("\r");
+            Thread.Sleep(1000);
+
+            serialPort.WriteLine("AT+CNMI=2,2");
+            Thread.Sleep(1000);
+        }
+
+        private void SendSMS()
+        {
+            try
+            {
+                //serialPort.Open();
+                serialPort.WriteLine("AT" + Environment.NewLine);
+                Thread.Sleep(100);
+                serialPort.WriteLine("AT+CMGF=1" + Environment.NewLine);
+                Thread.Sleep(100);
+                serialPort.WriteLine("AT+CSCS=\"GSM\"" + Environment.NewLine);
+                Thread.Sleep(100);
+                //Send sms from textbox
+                //serialPort.WriteLine("AT+CMGS=\"" + textBox1.Text + "\""+ Environment.NewLine);
+                serialPort.WriteLine("AT+CMGS=\"" + "+84977413768" + "\"" + Environment.NewLine);
+                Thread.Sleep(100);
+
+                serialPort.WriteLine("Xin chao, day la tin nhan tu dong" + Environment.NewLine);
+                Thread.Sleep(100);
+
+                serialPort.Write(new byte[] { 26 }, 0, 1);
+                Thread.Sleep(100);
+
+                var response = serialPort.ReadExisting();
+                if (response.Contains("ERROR"))
+                    //MessageBox.Show("Send faill!", "Messeage", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                else
+                            //MessageBox.Show("SMS Send", "Messeage", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            serialPort.Close();
+            }
+            catch (Exception ex)
+            {
+                //MessageBox.Show(ex.Message, "Message", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
         protected void OpenSerialPort()
         {
             btnCheckPorts_Click();
@@ -234,6 +291,7 @@ namespace _18_Jun_2021.Controllers
 
         }
         #endregion
+
         #region Send your message to Client(s)
         protected string SendMessageInterProcess(Message msg)
         {
@@ -312,6 +370,7 @@ namespace _18_Jun_2021.Controllers
             return (message + count.ToString());
         }
         #endregion
+
         #region  Save your message into database
         protected void SaveMessageToDatabase(Message msg)
         {
