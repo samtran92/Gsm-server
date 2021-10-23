@@ -189,7 +189,7 @@ namespace _18_Jun_2021.Controllers
         static GMSDevice_type GMSDevice;
         SelectListItem drPorts = new SelectListItem()
         {
-            Text = "COM16",
+            Text = "COM7",
             Value = "1",
             Selected = true
         };
