@@ -368,7 +368,10 @@ namespace _18_Jun_2021.Controllers
             string txMsg = "Theo thông tin lũ khẩn cấp của Đài khí tượng thủy văn tỉnh Quảng Ngãi cho biết vào lúc 16h ngày 28/10, mực nước trên các con sông Trà Bồng tại trạm Châu Ổ vượt trên báo động 2; nước sông Vệ và sông Trà Câu trên báo động 3; sông Trà Khúc ở dưới mức báo động 3 ở trạm Sơn Giang;";
             message = ParseWordFile(fileUpLoad);
             OpenSerialPort();
+            //message = SendMessageViaSerialPort(message);
+            msg.MessageContent = ParseWordFile(fileUpLoad);
             message = SendMessageViaSerialPort(msg);
+
             SaveMessageToDatabase(msg);
 
             ViewBag.Message = message;
