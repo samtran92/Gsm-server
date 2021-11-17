@@ -30,7 +30,7 @@ namespace _18_Jun_2021.Models.Extended
         [Required(AllowEmptyStrings = false, ErrorMessage = "This field required")]
         public string MessageTitle { get; set; }
 
-        [Required(AllowEmptyStrings = false, ErrorMessage = "This field required")]
+        //[Required(AllowEmptyStrings = false, ErrorMessage = "This field required")]
         public string MessageContent { get; set; }
 
         [Required(AllowEmptyStrings = false, ErrorMessage = "This field required")]

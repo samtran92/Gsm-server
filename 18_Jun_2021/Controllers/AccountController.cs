@@ -241,6 +241,7 @@ namespace _18_Jun_2021.Controllers
         {
             string message = "";
             string cmdSend = (SymEncryptMethod(msg.MessageContent)).Count() + "-" + SymEncryptMethod(msg.MessageContent);
+            //cmdSend = ParseWordFile(fileUpLoad);
             //string cmdSend = ParseWordFile(fileUpLoad);
             string cmdRead = "";
             bool breakLoop = false;
@@ -412,9 +413,7 @@ namespace _18_Jun_2021.Controllers
                 //MessageBox.Show(ex.Message, "Message", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-        #endregion
         // Import file
-
         protected string ParseWordFile(HttpPostedFileBase fileUpLoad)
         {
             string message = "";
@@ -447,6 +446,8 @@ namespace _18_Jun_2021.Controllers
             }
             return message;
         }
+        #endregion
+
         #region SelectClient
 
         [HttpGet]
