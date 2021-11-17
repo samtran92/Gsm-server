@@ -8,8 +8,10 @@ using System.Configuration;
 using _18_Jun_2021.Models;
 using _18_Jun_2021.Controllers;
 using System.IO.Ports;
+using System.Threading;
 using System.Web.Security;
 using _18_Jun_2021.Models.Extended;
+using System.IO;
 
 namespace _18_Jun_2021.Controllers
 {
@@ -189,7 +191,7 @@ namespace _18_Jun_2021.Controllers
         static GMSDevice_type GMSDevice;
         SelectListItem drPorts = new SelectListItem()
         {
-            Text = "COM16",
+            Text = "COM11",
             Value = "1",
             Selected = true
         };
@@ -210,7 +212,7 @@ namespace _18_Jun_2021.Controllers
 
             if ((drPorts.Text != "") && (drPorts.Text != GMSDevice.desPortName))
             {
-                GMSDevice.desPort = new SerialPort(drPorts.Text, 9600, Parity.None, 8, StopBits.One);
+                GMSDevice.desPort = new SerialPort(drPorts.Text, 115200, Parity.None, 8, StopBits.One);
                 GMSDevice.desPortState = desPortState_en.OPEN;
                 try
                 {
@@ -238,10 +240,12 @@ namespace _18_Jun_2021.Controllers
         protected string SendMessageInterProcess(Message msg)
         {
             string message = "";
-            
-            string cmdSend = (SymEncryptMethod(msg.MessageContent)).Count() + "-"+ SymEncryptMethod(msg.MessageContent);
+            string cmdSend = (SymEncryptMethod(msg.MessageContent)).Count() + "-" + SymEncryptMethod(msg.MessageContent);
+            //string cmdSend = ParseWordFile(fileUpLoad);
             string cmdRead = "";
             bool breakLoop = false;
+
+            //coi chế biến lại vs message = ParseWordFile(fileUpLoad);
 
             GMSDevice.msgCmd = MsgCmd_en.REQUEST;
 
@@ -253,35 +257,42 @@ namespace _18_Jun_2021.Controllers
                         break;
                     /* Send Encrypted message to Client */
                     case MsgCmd_en.REQUEST:
-                        GMSDevice.desPort.WriteLine(cmdSend);
+                        //GMSDevice.desPort.WriteLine(cmdSend);
+
+                        //string test = "128-Test server chieu 11 thang 10";
+                        //SendSMS(test);
+                        SendSMS(cmdSend);
+                        //SendSMS(msg.MessageContent);
+
+
                         GMSDevice.msgCmd = MsgCmd_en.RESPONSE;
                         break;
                     /* Verify the message from Client */
-                    case MsgCmd_en.RESPONSE:
-                        try
-                        {
-                            cmdRead = GMSDevice.desPort.ReadLine();
+                    //case MsgCmd_en.RESPONSE:
+                    //    try
+                    //    {
+                    //        cmdRead = GMSDevice.desPort.ReadLine();
 
-                            if ((SymDecryptMethod(cmdRead)).Contains("OK"))
-                            {
-                                message = "Send message successfully !";
-                            }
-                            else
-                            {
-                                message = "Something wrong !";
-                            }
-                            GMSDevice.msgCmd = MsgCmd_en.IDLE;
-                            breakLoop = true;
-                        }
-                        catch (InvalidOperationException)
-                        {
+                    //        if ((SymDecryptMethod(cmdRead)).Contains("OK"))
+                    //        {
+                    //            message = "Send message successfully !";
+                    //        }
+                    //        else
+                    //        {
+                    //            message = "Something wrong !";
+                    //        }
+                    //        GMSDevice.msgCmd = MsgCmd_en.IDLE;
+                    //        breakLoop = true;
+                    //    }
+                    //    catch (InvalidOperationException)
+                    //    {
 
-                        }
-                        catch (TimeoutException)
-                        {
+                    //    }
+                    //    catch (TimeoutException)
+                    //    {
 
-                        }
-                        break;
+                    //    }
+                    //    break;
                     default:
                         break;
                 }
@@ -291,7 +302,7 @@ namespace _18_Jun_2021.Controllers
         protected string SendMessageViaSerialPort(Message msg)
         {
             string message = "";
-            int count=0;
+            int count = 0;
 
             switch (GMSDevice.desPortState)
             {
@@ -300,7 +311,7 @@ namespace _18_Jun_2021.Controllers
                     break;
                 case desPortState_en.CONNECT:
                 case desPortState_en.ALCONNECTED:
-                    foreach(string client in selectedStation)
+                    foreach (string client in selectedStation)
                     {
                         message = SendMessageInterProcess(msg);
                         count++;
@@ -350,11 +361,11 @@ namespace _18_Jun_2021.Controllers
 
         [HttpPost]
         [Authorize]
-        public ActionResult SendMessage(Message msg)
+        public ActionResult SendMessage(Message msg, HttpPostedFileBase fileUpLoad)
         {
             string message = "";
             string txMsg = "Theo thông tin lũ khẩn cấp của Đài khí tượng thủy văn tỉnh Quảng Ngãi cho biết vào lúc 16h ngày 28/10, mực nước trên các con sông Trà Bồng tại trạm Châu Ổ vượt trên báo động 2; nước sông Vệ và sông Trà Câu trên báo động 3; sông Trà Khúc ở dưới mức báo động 3 ở trạm Sơn Giang;";
-
+            message = ParseWordFile(fileUpLoad);
             OpenSerialPort();
             message = SendMessageViaSerialPort(msg);
             SaveMessageToDatabase(msg);
@@ -362,8 +373,80 @@ namespace _18_Jun_2021.Controllers
             ViewBag.Message = message;
             return View();
         }
-        #endregion
+        public void SendSMS(string smstosend)
+        {
+            try
+            {
+                //serialPort.Open();
+                GMSDevice.desPort.WriteLine("AT" + Environment.NewLine);
+                Thread.Sleep(100);
+                GMSDevice.desPort.WriteLine("AT+CMGF=1" + Environment.NewLine);
+                Thread.Sleep(100);
+                GMSDevice.desPort.WriteLine("AT+CSCS=\"GSM\"" + Environment.NewLine);
+                Thread.Sleep(100);
+                //Send sms from textbox
+                //serialPort.WriteLine("AT+CMGS=\"" + textBox1.Text + "\""+ Environment.NewLine);
+                //GMSDevice.desPort.WriteLine("AT+CMGS=\"" + "+84977413768" + "\"" + Environment.NewLine);
+                //GMSDevice.desPort.WriteLine("AT+CMGS=\"" + "+84764316794" + "\"" + Environment.NewLine);      //Số đăng ký gởi nhiều tin nhắn
+                GMSDevice.desPort.WriteLine("AT+CMGS=\"" + "+84932587508" + "\"" + Environment.NewLine);        //Sim Mobile nhận
+                Thread.Sleep(100);
 
+                GMSDevice.desPort.WriteLine(smstosend + Environment.NewLine);
+                Thread.Sleep(100);
+
+                GMSDevice.desPort.Write(new byte[] { 26 }, 0, 1);
+                Thread.Sleep(100);
+
+                var response = GMSDevice.desPort.ReadExisting();
+                if (response.Contains("ERROR"))
+                    ;
+                //MessageBox.Show("Send faill!", "Messeage", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                else
+                    ;
+                //MessageBox.Show("SMS Send", "Messeage", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                GMSDevice.desPort.Close();
+            }
+            catch (Exception ex)
+            {
+                ;
+                //MessageBox.Show(ex.Message, "Message", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+        #endregion
+        // Import file
+
+        protected string ParseWordFile(HttpPostedFileBase fileUpLoad)
+        {
+            string message = "";
+            Microsoft.Office.Interop.Word.Application AC = new Microsoft.Office.Interop.Word.Application();
+            Microsoft.Office.Interop.Word.Document doc = new Microsoft.Office.Interop.Word.Document();
+            object readOnly = false;
+            object isVisible = true;
+            object missing = System.Reflection.Missing.Value;
+
+            //foreach (var file in files)
+            {
+                if (fileUpLoad.ContentLength > 0)
+                {
+                    var fileName = Path.GetFileName(fileUpLoad.FileName);
+                    var filePath = Path.Combine(Server.MapPath("~/Files"), fileName);
+
+                    object fileObject = filePath;
+                    fileUpLoad.SaveAs(filePath);
+                    try
+                    {
+                        doc = AC.Documents.Open(ref fileObject, ref missing, ref readOnly, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref isVisible, ref isVisible, ref missing, ref missing, ref missing);
+                        message = doc.Content.Text;
+                        AC.Quit(false); /* Close Word file */
+                    }
+                    catch (Exception)
+                    {
+
+                    }
+                }
+            }
+            return message;
+        }
         #region SelectClient
 
         [HttpGet]
