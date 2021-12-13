@@ -40,7 +40,7 @@ namespace _18_Jun_2021.Controllers
                     if (string.Compare(acc.Password, v.Password) == 0)
                     {
                         posterName = acc.Name;
-                        int timeout = 1; //Timeout 1 Minutes
+                        int timeout = 5; //Timeout 5 Minutes
                         var ticket = new FormsAuthenticationTicket(acc.Name, false, timeout);
                         string encrypted = FormsAuthentication.Encrypt(ticket);
                         var cookie = new HttpCookie(FormsAuthentication.FormsCookieName, encrypted);
@@ -70,7 +70,9 @@ namespace _18_Jun_2021.Controllers
         [Authorize]
         public ActionResult Logout()
         {
-            return View();
+            posterName = "";
+            FormsAuthentication.SignOut();
+            return View("Login");
         }
 
         //Logout
@@ -450,6 +452,7 @@ namespace _18_Jun_2021.Controllers
         #region SelectClient
 
         [HttpGet]
+        [Authorize]
         public ActionResult SelectClient()
         {
             StationModel stationModel = new StationModel();
@@ -462,6 +465,7 @@ namespace _18_Jun_2021.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public ActionResult SelectClient(FormCollection formCollection)
         {
             string message = "";
@@ -483,6 +487,7 @@ namespace _18_Jun_2021.Controllers
 
         #region RegisterClient
         [HttpGet]
+        [Authorize]
         public ActionResult RegisterStation()
         {
             return View();

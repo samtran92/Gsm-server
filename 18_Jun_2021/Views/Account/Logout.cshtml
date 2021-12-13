@@ -10,10 +10,10 @@
 @using (Html.BeginForm())
 {
     @RenderBody()
+
     <div class="limiter">
 
         <div class="container-login100" style="background-image: url('../../images/bg-01.jpg'); " />
-
 
 
         <div class="wrap-login100">
@@ -26,15 +26,30 @@
                 </center>
 
                 <span class="login100-form-title p-b-34 p-t-27">
-                    Logout
+                    Welcome back!
                 </span>
 
-                <div class="container-login100-form-btn">
-                    <button class="login100-form-btn">
-                        Logout
-                    </button>
-                </div>
+                <span class="login100-form-title p-b-34 p-t-27">
+                    How it's going?
+                </span>
+
             </form>
+            <br />
+            <div>
+                @Html.ActionLink("Logout or", "Logout", "Account")
+                @if (ViewBag.Message != "")
+                {
+                    <div class="text-danger">@ViewBag.Message</div>
+                }
+            </div>
+            <br />
+            <div>
+                @Html.ActionLink("Continue with sending message to your Station", "SelectClient", "Account")
+                @if (ViewBag.Message != "")
+                {
+                    <div class="text-danger">@ViewBag.Message</div>
+                }
+            </div>
         </div>
     </div>
 
