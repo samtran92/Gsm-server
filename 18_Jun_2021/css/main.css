@@ -241,6 +241,33 @@ iframe {
 
 
 /*------------------------------------------------------------------
+[ Table ]*/
+table.gridtable {
+	font-family: Poppins-Regular;
+	font-size: 16px;
+	color: #fff;
+	border-width: 1px;
+	border-color: #666666;
+	border-collapse: collapse;
+}
+
+	table.gridtable th {
+		border-width: 1px;
+		padding: 8px;
+		border-style: solid;
+		border-color: transparent;
+		background-color: transparent;
+	}
+
+	table.gridtable td {
+		border-width: 1px;
+		padding: 8px;
+		border-style: solid;
+		border-color: transparent;
+		background-color: transparent;
+	}
+
+/*------------------------------------------------------------------
 [ Input ]*/
 
 .wrap-input100 {

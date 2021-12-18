@@ -40,7 +40,7 @@ namespace _18_Jun_2021.Controllers
                     if (string.Compare(acc.Password, v.Password) == 0)
                     {
                         posterName = acc.Name;
-                        int timeout = 5; //Timeout 5 Minutes
+                        int timeout = (acc.RememberMe == true) ? (60) : (5); //Timeout in Minutes
                         var ticket = new FormsAuthenticationTicket(acc.Name, false, timeout);
                         string encrypted = FormsAuthentication.Encrypt(ticket);
                         var cookie = new HttpCookie(FormsAuthentication.FormsCookieName, encrypted);
@@ -449,29 +449,24 @@ namespace _18_Jun_2021.Controllers
             }
             return message;
         }
-        
         #region SelectClient
 
         [HttpGet]
         [Authorize]
         public ActionResult SelectClient()
         {
-            StationModel stationModel = new StationModel();
-
-            using (AccountEntities1 dc = new AccountEntities1())
-            {
-                stationModel.ListStation = dc.Stations.ToList<Station>();
-            }
-            return View(stationModel);
+            AccountEntities1 entities = new AccountEntities1();
+            List<Station> stationModels = entities.Stations.OrderBy(a => a.TargetStation).ToList();
+            return View(stationModels.ToList());
         }
 
         [HttpPost]
         [Authorize]
-        public ActionResult SelectClient(FormCollection formCollection)
+        public ActionResult SelectClient(string[] ids)
         {
             string message = "";
 
-            if (formCollection.Count < 2)
+            if (ids == null)
             {
                 message = "Something Wrong !";
                 ViewBag.Message = message;
@@ -479,7 +474,7 @@ namespace _18_Jun_2021.Controllers
             }
             else
             {
-                selectedStation = formCollection["StationId"].Split(new char[] { ',' });
+                selectedStation = ids;
                 return RedirectToAction("SendMessage");
             }
         }
