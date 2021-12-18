@@ -40,7 +40,7 @@ namespace _18_Jun_2021.Controllers
                     if (string.Compare(acc.Password, v.Password) == 0)
                     {
                         posterName = acc.Name;
-                        int timeout = 1; //Timeout 1 Minutes
+                        int timeout = (acc.RememberMe == true) ? (60) : (5); //Timeout in Minutes
                         var ticket = new FormsAuthenticationTicket(acc.Name, false, timeout);
                         string encrypted = FormsAuthentication.Encrypt(ticket);
                         var cookie = new HttpCookie(FormsAuthentication.FormsCookieName, encrypted);
@@ -70,7 +70,9 @@ namespace _18_Jun_2021.Controllers
         [Authorize]
         public ActionResult Logout()
         {
-            return View();
+            posterName = "";
+            FormsAuthentication.SignOut();
+            return View("Login");
         }
 
         //Logout
@@ -191,7 +193,7 @@ namespace _18_Jun_2021.Controllers
         static GMSDevice_type GMSDevice;
         SelectListItem drPorts = new SelectListItem()
         {
-            Text = "COM7",
+            Text = "COM3",
             Value = "1",
             Selected = true
         };
@@ -456,21 +458,17 @@ namespace _18_Jun_2021.Controllers
         [HttpGet]
         public ActionResult SelectClient()
         {
-            StationModel stationModel = new StationModel();
-
-            using (AccountEntities1 dc = new AccountEntities1())
-            {
-                stationModel.ListStation = dc.Stations.ToList<Station>();
-            }
-            return View(stationModel);
+            AccountEntities1 entities = new AccountEntities1();
+            List<Station> stationModels = entities.Stations.OrderBy(a => a.TargetStation).ToList();
+            return View(stationModels.ToList());
         }
 
         [HttpPost]
-        public ActionResult SelectClient(FormCollection formCollection)
+        public ActionResult SelectClient(string[] ids)
         {
             string message = "";
 
-            if (formCollection.Count < 2)
+            if (ids == null)
             {
                 message = "Something Wrong !";
                 ViewBag.Message = message;
@@ -478,7 +476,7 @@ namespace _18_Jun_2021.Controllers
             }
             else
             {
-                selectedStation = formCollection["StationId"].Split(new char[] { ',' });
+                selectedStation = ids;
                 return RedirectToAction("SendMessage");
             }
         }

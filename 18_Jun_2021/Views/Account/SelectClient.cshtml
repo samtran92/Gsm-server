@@ -1,10 +1,10 @@
-﻿@model _18_Jun_2021.Models.Extended.StationModel
-
+﻿
 @{
     ViewBag.Title = "SelectClient";
     Layout = "~/Views/_LayoutPage1.cshtml";
     <link href="~/css/main.css" rel="stylesheet" />
     <link href="~/css/util.css" rel="stylesheet" />
+    WebGrid webGrid = new WebGrid(source: Model, canPage: false, canSort: false);
 }
 
 
@@ -45,21 +45,22 @@
                     });
                 </script>
 
-                @for (int idx = 0; idx < Model.ListStation.Count; idx++)
-                {
-                    <div class="contact100-form-checkbox">
-                        <input class="input-checkbox100" id="@Model.ListStation[idx].Id" name="StationId" type="checkbox" value="@Model.ListStation[idx].Id">
-                        <label class="label-checkbox100" for="@Model.ListStation[idx].Id">
-                            @Model.ListStation[idx].TargetStation
-                        </label>
-                    </div>
-                }
-
-                <div class="contact100-form-checkbox">
-                    <input class="input-checkbox100" id="checkBoxAll" type="checkbox" name="checkBoxAll" value="true">
-                    <label class="label-checkbox100" for="checkBoxAll">
-                        Select All ?
-                    </label>
+                <div>
+                    @webGrid.GetHtml(
+                    tableStyle: "table.gridtable",
+                    htmlAttributes: new { id = "checkableGrid" },
+                    columns: webGrid.Columns
+                        (
+                            //Here I am going to add checkbox column
+                            webGrid.Column(
+                                format: @<text> <input type="checkbox" value="@item.TargetStation" name="ids" /> </text>, header: "{checkall}"
+),
+webGrid.Column("TargetStation", "Select All ?"),
+webGrid.Column("StationInfo", ""),
+webGrid.Column(header: "", format:@<text>
+                            <a href="#" id="Delete_@item.TargetStation" class="delete">Delete</a></text>)
+)
+)
                 </div>
                 <br />
 
@@ -79,29 +80,68 @@
         </div>
     </div>
 
+    <script>
+        $(document).ready(function () {
+
+            // 1st replace first column header text with checkbox
+
+            $("#checkableGrid th").each(function () {
+                if ($.trim($(this).text().toString().toLowerCase()) === "{checkall}") {
+                    $(this).text('');
+                    $("<input/>", { type: "checkbox", id: "cbSelectAll", value: "" }).appendTo($(this));
+                    $(this).append("<span></span>");
+                }
+            });
+
+            //2nd click event for header checkbox for select /deselect all
+            $("#cbSelectAll").click("click", function () {
+                var ischecked = this.checked;
+                $('#checkableGrid').find("input:checkbox").each(function () {
+                    this.checked = ischecked;
+                });
+            });
 
 
-    <script src="~/Scripts/jquery-3.4.1.js"></script>
+            //3rd click event for checkbox of each row
+            $("input[name='ids']").click("click", function () {
+                var totalRows = $("#checkableGrid td :checkbox").length;
+                var checked = $("#checkableGrid td :checkbox:checked").length;
+
+                if (checked == totalRows) {
+                    $("#checkableGrid").find("input:checkbox").each(function () {
+                        this.checked = true;
+                    });
+                }
+                else {
+                    $("#cbSelectAll").prop('checked', false);
+                }
+            });
+
+        });
+    </script>
+
+    <!--<script src="~/Scripts/jquery-3.4.1.js"></script>
     <script src="~/Scripts/jquery.validate-vsdoc.js"></script>
     <script src="~/Scripts/jquery.validate.js"></script>
     <script src="~/Scripts/jquery.validate.min.js"></script>
     <script src="~/Scripts/jquery.validate.unobtrusive.js"></script>
-    <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>-->
     <!--===============================================================================================-->
-    <script src="~/vendor/jquery/jquery-3.2.1.min.js"></script>
+    <!--<script src="~/vendor/jquery/jquery-3.2.1.min.js"></script>-->
     <!--===============================================================================================-->
-    <script src="~/vendor/animsition/js/animsition.min.js"></script>
+    <!--<script src="~/vendor/animsition/js/animsition.min.js"></script>-->
     <!--===============================================================================================-->
-    <script src="~/vendor/bootstrap/js/popper.js"></script>
-    <script src="~/vendor/bootstrap/js/bootstrap.min.js"></script>
+    <!--<script src="~/vendor/bootstrap/js/popper.js"></script>
+    <script src="~/vendor/bootstrap/js/bootstrap.min.js"></script>-->
     <!--===============================================================================================-->
-    <script src="~/vendor/select2/select2.min.js"></script>
+    <!--<script src="~/vendor/select2/select2.min.js"></script>-->
     <!--===============================================================================================-->
-    <script src="~/vendor/daterangepicker/moment.min.js"></script>
-    <script src="~/vendor/daterangepicker/daterangepicker.js"></script>
+    <!--<script src="~/vendor/daterangepicker/moment.min.js"></script>
+    <script src="~/vendor/daterangepicker/daterangepicker.js"></script>-->
     <!--===============================================================================================-->
-    <script src="~/vendor/countdowntime/countdowntime.js"></script>
+    <!--<script src="~/vendor/countdowntime/countdowntime.js"></script>-->
     <!--===============================================================================================-->
-    <script src="~/js/main.js"></script>
+    <!--<script src="~/js/main.js"></script>-->
 
 }
+1
