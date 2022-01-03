@@ -55,10 +55,10 @@
                             webGrid.Column(
                                 format: @<text> <input type="checkbox" value="@item.TargetStation" name="ids" /> </text>, header: "{checkall}"
                             ),
-                            webGrid.Column("TargetStation", "Select All ?"),
+                            webGrid.Column("TargetStation", "SelectAll?"),
                             webGrid.Column("StationInfo", ""),
-                            webGrid.Column(header: "", format:@<text>
-                                                <a href="#" id="Delete_@item.TargetStation" class="delete">Delete</a></text>)
+                            webGrid.Column(header: "", format:@<a href="/Account/EditStation/@item.Id" class="zmdi-edit">Edit</a>),
+                            webGrid.Column(header: "", format:@<a href="/Account/Delete/@item.Id" class="zmdi-delete">Delete</a>)
                         )
                     )
                 </div>

@@ -414,7 +414,7 @@ namespace _18_Jun_2021.Controllers
                 //MessageBox.Show(ex.Message, "Message", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-        #endregion
+
         // Import file
 
         protected string ParseWordFile(HttpPostedFileBase fileUpLoad)
@@ -449,6 +449,8 @@ namespace _18_Jun_2021.Controllers
             }
             return message;
         }
+        #endregion
+
         #region SelectClient
 
         [HttpGet]
@@ -511,6 +513,61 @@ namespace _18_Jun_2021.Controllers
             }
             ViewBag.Message = message;
             return View();
+        }
+        #endregion
+
+        #region Edit Client's information
+        [HttpGet]
+        [Authorize]
+        public ActionResult EditStation(int id)
+        {
+            AccountEntities1 dc = new AccountEntities1();
+            var model = dc.Stations.Find(id);
+
+            UserStation userStation = new UserStation();
+            userStation.Id = model.Id;
+            userStation.TargetStation = model.TargetStation;
+            userStation.PhoneNum = model.PhoneNum;
+            userStation.StationInfo = model.StationInfo;
+
+            return View("EditStation", userStation);
+        }
+
+        [HttpPost]
+        [Authorize]
+        public ActionResult EditStation(UserStation userStation)
+        {
+            Station station = new Station();
+            station.Id = userStation.Id;
+            station.TargetStation = userStation.TargetStation;
+            station.PhoneNum = userStation.PhoneNum;
+            station.StationInfo = userStation.StationInfo;
+
+            AccountEntities1 dc = new AccountEntities1();
+            dc.Entry(station).State = System.Data.Entity.EntityState.Modified;
+            try
+            {
+                dc.SaveChanges();
+            }
+            catch(Exception)
+            {
+                /* Input data is wrong > can not save to database */
+            }
+
+            return RedirectToAction("SelectClient");
+        }
+        #endregion
+
+        #region Delete Client's information
+        [Authorize]
+        public ActionResult Delete(int id)
+        {
+            AccountEntities1 dc = new AccountEntities1();
+            var model = dc.Stations.Find(id);
+            dc.Stations.Remove(model);
+            dc.SaveChanges();
+
+            return RedirectToAction("SelectClient");
         }
         #endregion
     }

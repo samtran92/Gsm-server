@@ -1,0 +1,87 @@
+﻿@model _18_Jun_2021.Models.Extended.UserStation
+
+@{
+    ViewBag.Title = "EditStation";
+    Layout = "~/Views/_LayoutPage1.cshtml";
+    <link href="~/css/main.css" rel="stylesheet" />
+    <link href="~/css/util.css" rel="stylesheet" />
+}
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="limiter">
+
+        <div class="container-login100" style="background-image: url('../../images/bg-01.jpg'); " />
+
+
+        <div class="wrap-login100">
+            <form action="EditStation" method="post" class="login100-form validate-form">
+                <center>
+                    <span class="">
+                        <img src="~/images/icons/Icon RM.ico" />
+                        <i class="zmdi-landscape"></i>
+                    </span>
+                </center>
+
+                <span class="login100-form-title p-b-34 p-t-27">
+                    Update Station's Info
+                </span>
+
+                <div class="wrap-input100 validate-input">
+                    @Html.TextBoxFor(x => x.TargetStation, new { @class = "input100"})
+                    <span class="focus-input100" data-valmsg-for="TargetStation" data-valmsg-replace="true" data-placeholder="&#xf207;"></span>
+                </div>
+
+                <div class="wrap-input100 validate-input">
+                    @Html.TextBoxFor(x => x.StationInfo, new { @class = "input100"})
+                    <span class="focus-input100" data-valmsg-for="StationInfo" data-valmsg-replace="true" data-placeholder="&#xf207;"></span>
+                </div>
+
+                <div class="wrap-input100 validate-input">
+                    @Html.TextBoxFor(x => x.PhoneNum, new { @class = "input100"})
+                    <span class="focus-input100" data-valmsg-for="PhoneNum" data-valmsg-replace="true" data-placeholder="&#xf207;"></span>
+                </div>
+
+                <div class="container-login100-form-btn">
+                    <button class="login100-form-btn">
+                        SaveChange
+                    </button>
+                </div>
+            </form>
+            <div>
+                @Html.ActionLink("SelectClient", "SelectClient", "Account")
+                @if (ViewBag.Message != "")
+                {
+                    <div class="text-danger">@ViewBag.Message</div>
+                }
+            </div>
+        </div>
+    </div>
+
+
+    <script src="~/Scripts/jquery-3.4.1.js"></script>
+    <script src="~/Scripts/jquery.validate-vsdoc.js"></script>
+    <script src="~/Scripts/jquery.validate.js"></script>
+    <script src="~/Scripts/jquery.validate.min.js"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.js"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+    <!--===============================================================================================-->
+    <script src="~/vendor/jquery/jquery-3.2.1.min.js"></script>
+    <!--===============================================================================================-->
+    <script src="~/vendor/animsition/js/animsition.min.js"></script>
+    <!--===============================================================================================-->
+    <script src="~/vendor/bootstrap/js/popper.js"></script>
+    <script src="~/vendor/bootstrap/js/bootstrap.min.js"></script>
+    <!--===============================================================================================-->
+    <script src="~/vendor/select2/select2.min.js"></script>
+    <!--===============================================================================================-->
+    <script src="~/vendor/daterangepicker/moment.min.js"></script>
+    <script src="~/vendor/daterangepicker/daterangepicker.js"></script>
+    <!--===============================================================================================-->
+    <script src="~/vendor/countdowntime/countdowntime.js"></script>
+    <!--===============================================================================================-->
+    <script src="~/js/main.js"></script>
+
+}
