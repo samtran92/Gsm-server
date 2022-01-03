@@ -193,7 +193,7 @@ namespace _18_Jun_2021.Controllers
         static GMSDevice_type GMSDevice;
         SelectListItem drPorts = new SelectListItem()
         {
-            Text = "COM3",
+            Text = "COM14",
             Value = "1",
             Selected = true
         };
