@@ -1,7 +1,7 @@
-﻿@model _18_Jun_2021.Models.Account
+﻿@model _18_Jun_2021.Models.Extended.UserStation
 
 @{
-    ViewBag.Title = "Logout";
+    ViewBag.Title = "EditStation";
     Layout = "~/Views/_LayoutPage1.cshtml";
     <link href="~/css/main.css" rel="stylesheet" />
     <link href="~/css/util.css" rel="stylesheet" />
@@ -9,7 +9,7 @@
 
 @using (Html.BeginForm())
 {
-    @RenderBody()
+    @Html.AntiForgeryToken()
 
     <div class="limiter">
 
@@ -17,7 +17,7 @@
 
 
         <div class="wrap-login100">
-            <form action="Logout" method="post" class="login100-form validate-form">
+            <form action="EditStation" method="post" class="login100-form validate-form">
                 <center>
                     <span class="">
                         <img src="~/images/icons/Icon RM.ico" />
@@ -26,25 +26,32 @@
                 </center>
 
                 <span class="login100-form-title p-b-34 p-t-27">
-                    Welcome back!
+                    Update Station's Info
                 </span>
 
-                <span class="login100-form-title p-b-34 p-t-27">
-                    How it's going?
-                </span>
+                <div class="wrap-input100 validate-input">
+                    @Html.TextBoxFor(x => x.TargetStation, new { @class = "input100"})
+                    <span class="focus-input100" data-valmsg-for="TargetStation" data-valmsg-replace="true" data-placeholder="&#xf207;"></span>
+                </div>
 
+                <div class="wrap-input100 validate-input">
+                    @Html.TextBoxFor(x => x.StationInfo, new { @class = "input100"})
+                    <span class="focus-input100" data-valmsg-for="StationInfo" data-valmsg-replace="true" data-placeholder="&#xf207;"></span>
+                </div>
+
+                <div class="wrap-input100 validate-input">
+                    @Html.TextBoxFor(x => x.PhoneNum, new { @class = "input100"})
+                    <span class="focus-input100" data-valmsg-for="PhoneNum" data-valmsg-replace="true" data-placeholder="&#xf207;"></span>
+                </div>
+
+                <div class="container-login100-form-btn">
+                    <button class="login100-form-btn">
+                        SaveChange
+                    </button>
+                </div>
             </form>
-            <br />
             <div>
-                @Html.ActionLink("Logout or", "Logout", "Account")
-                @if (ViewBag.Message != "")
-                {
-                    <div class="text-danger">@ViewBag.Message</div>
-                }
-            </div>
-            <br />
-            <div>
-                @Html.ActionLink("Continue with sending message to your Station", "SelectClient", "Account")
+                @Html.ActionLink("SelectClient", "SelectClient", "Account")
                 @if (ViewBag.Message != "")
                 {
                     <div class="text-danger">@ViewBag.Message</div>
@@ -52,7 +59,6 @@
             </div>
         </div>
     </div>
-
 
 
     <script src="~/Scripts/jquery-3.4.1.js"></script>
@@ -77,6 +83,5 @@
     <script src="~/vendor/countdowntime/countdowntime.js"></script>
     <!--===============================================================================================-->
     <script src="~/js/main.js"></script>
-
 
 }

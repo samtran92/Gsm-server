@@ -8,6 +8,8 @@ namespace _18_Jun_2021.Models.Extended
 {
     public partial class UserStation
     {
+        public int Id { get; set; }
+
         [Required(AllowEmptyStrings = false, ErrorMessage = "This field required")]
         public string TargetStation { get; set; }
 

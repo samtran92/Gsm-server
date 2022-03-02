@@ -239,91 +239,45 @@ namespace _18_Jun_2021.Controllers
         }
         #endregion
         #region Send your message to Client(s)
-        protected string SendMessageInterProcess(Message msg)
+        protected string SendMessageInterProcess(string message, string PhoneNum)
         {
-            string message = "";
-            string cmdSend = (SymEncryptMethod(msg.MessageContent)).Count() + "-" + SymEncryptMethod(msg.MessageContent);
-            //cmdSend = ParseWordFile(fileUpLoad);
-            //string cmdSend = ParseWordFile(fileUpLoad);
-            string cmdRead = "";
-            bool breakLoop = false;
+            string result;
+            string cmdSend = (SymEncryptMethod(message)).Count() + "-" + SymEncryptMethod(message);
+            //string test = "128-Test server chieu 11 thang 10";
+            //SendSMS(test);
+            result = SendSMS(cmdSend, PhoneNum);
 
-            //coi chế biến lại vs message = ParseWordFile(fileUpLoad);
-
-            GMSDevice.msgCmd = MsgCmd_en.REQUEST;
-
-            while (false == breakLoop)
-            {
-                switch (GMSDevice.msgCmd)
-                {
-                    case MsgCmd_en.IDLE:
-                        break;
-                    /* Send Encrypted message to Client */
-                    case MsgCmd_en.REQUEST:
-                        //GMSDevice.desPort.WriteLine(cmdSend);
-
-                        //string test = "128-Test server chieu 11 thang 10";
-                        //SendSMS(test);
-                        SendSMS(cmdSend);
-                        //SendSMS(msg.MessageContent);
-
-
-                        GMSDevice.msgCmd = MsgCmd_en.RESPONSE;
-                        break;
-                    /* Verify the message from Client */
-                    //case MsgCmd_en.RESPONSE:
-                    //    try
-                    //    {
-                    //        cmdRead = GMSDevice.desPort.ReadLine();
-
-                    //        if ((SymDecryptMethod(cmdRead)).Contains("OK"))
-                    //        {
-                    //            message = "Send message successfully !";
-                    //        }
-                    //        else
-                    //        {
-                    //            message = "Something wrong !";
-                    //        }
-                    //        GMSDevice.msgCmd = MsgCmd_en.IDLE;
-                    //        breakLoop = true;
-                    //    }
-                    //    catch (InvalidOperationException)
-                    //    {
-
-                    //    }
-                    //    catch (TimeoutException)
-                    //    {
-
-                    //    }
-                    //    break;
-                    default:
-                        break;
-                }
-            }
-            return (message);
+            return (result);
         }
-        protected string SendMessageViaSerialPort(Message msg)
+        protected string SendMessageViaSerialPort(string message)
         {
-            string message = "";
+            string result = "";
             int count = 0;
 
             switch (GMSDevice.desPortState)
             {
                 case desPortState_en.OPEN:
-                    message = "Chua ket noi voi thiet bi";
+                    result = "Chua ket noi voi thiet bi";
                     break;
                 case desPortState_en.CONNECT:
                 case desPortState_en.ALCONNECTED:
-                    foreach (string client in selectedStation)
+                    foreach (string station in selectedStation)
                     {
-                        message = SendMessageInterProcess(msg);
+                        using (AccountEntities1 dc = new AccountEntities1())
+                        {
+                            var v = dc.Stations.Where(a => a.TargetStation == station).FirstOrDefault();
+                            if (v != null)
+                            {
+                                result = SendMessageInterProcess(message, v.PhoneNum);
+                            }
+                        }
                         count++;
                     }
                     break;
                 default:
                     break;
             }
-            return (message + count.ToString());
+            return (result + count.ToString());
         }
         #endregion
         #region  Save your message into database
@@ -366,21 +320,18 @@ namespace _18_Jun_2021.Controllers
         [Authorize]
         public ActionResult SendMessage(Message msg, HttpPostedFileBase fileUpLoad)
         {
-            string message = "";
-            string txMsg = "Theo thông tin lũ khẩn cấp của Đài khí tượng thủy văn tỉnh Quảng Ngãi cho biết vào lúc 16h ngày 28/10, mực nước trên các con sông Trà Bồng tại trạm Châu Ổ vượt trên báo động 2; nước sông Vệ và sông Trà Câu trên báo động 3; sông Trà Khúc ở dưới mức báo động 3 ở trạm Sơn Giang;";
-            message = ParseWordFile(fileUpLoad);
+            string result;
+            string message = ParseWordFile(fileUpLoad);
             OpenSerialPort();
-            //message = SendMessageViaSerialPort(message);
-            msg.MessageContent = ParseWordFile(fileUpLoad);
-            message = SendMessageViaSerialPort(msg);
-
+            result = SendMessageViaSerialPort(message);
             SaveMessageToDatabase(msg);
 
-            ViewBag.Message = message;
+            ViewBag.Message = result;
             return View();
         }
-        public void SendSMS(string smstosend)
+        public string SendSMS(string smstosend, string PhoneNum)
         {
+            string result = "NG";
             try
             {
                 //serialPort.Open();
@@ -394,7 +345,7 @@ namespace _18_Jun_2021.Controllers
                 //serialPort.WriteLine("AT+CMGS=\"" + textBox1.Text + "\""+ Environment.NewLine);
                 //GMSDevice.desPort.WriteLine("AT+CMGS=\"" + "+84977413768" + "\"" + Environment.NewLine);
                 //GMSDevice.desPort.WriteLine("AT+CMGS=\"" + "+84764316794" + "\"" + Environment.NewLine);      //Số đăng ký gởi nhiều tin nhắn
-                GMSDevice.desPort.WriteLine("AT+CMGS=\"" + "+84932587508" + "\"" + Environment.NewLine);        //Sim Mobile nhận
+                GMSDevice.desPort.WriteLine("AT+CMGS=\"" + "+" + PhoneNum + "\"" + Environment.NewLine);        //Sim Mobile nhận
                 Thread.Sleep(100);
 
                 GMSDevice.desPort.WriteLine(smstosend + Environment.NewLine);
@@ -411,12 +362,14 @@ namespace _18_Jun_2021.Controllers
                     ;
                 //MessageBox.Show("SMS Send", "Messeage", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 GMSDevice.desPort.Close();
+                result = "OK";
             }
             catch (Exception ex)
             {
                 ;
                 //MessageBox.Show(ex.Message, "Message", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+            return result;
         }
         // Import file
         protected string ParseWordFile(HttpPostedFileBase fileUpLoad)
@@ -430,7 +383,7 @@ namespace _18_Jun_2021.Controllers
 
             //foreach (var file in files)
             {
-                if (fileUpLoad.ContentLength > 0)
+                if ( (fileUpLoad != null) && (fileUpLoad.ContentLength > 0) )
                 {
                     var fileName = Path.GetFileName(fileUpLoad.FileName);
                     var filePath = Path.Combine(Server.MapPath("~/Files"), fileName);
@@ -456,6 +409,7 @@ namespace _18_Jun_2021.Controllers
         #region SelectClient
 
         [HttpGet]
+        [Authorize]
         public ActionResult SelectClient()
         {
             AccountEntities1 entities = new AccountEntities1();
@@ -464,6 +418,7 @@ namespace _18_Jun_2021.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public ActionResult SelectClient(string[] ids)
         {
             string message = "";
@@ -485,6 +440,7 @@ namespace _18_Jun_2021.Controllers
 
         #region RegisterClient
         [HttpGet]
+        [Authorize]
         public ActionResult RegisterStation()
         {
             return View();
@@ -512,6 +468,61 @@ namespace _18_Jun_2021.Controllers
             }
             ViewBag.Message = message;
             return View();
+        }
+        #endregion
+
+        #region Edit Client's information
+        [HttpGet]
+        [Authorize]
+        public ActionResult EditStation(int id)
+        {
+            AccountEntities1 dc = new AccountEntities1();
+            var model = dc.Stations.Find(id);
+
+            UserStation userStation = new UserStation();
+            userStation.Id = model.Id;
+            userStation.TargetStation = model.TargetStation;
+            userStation.PhoneNum = model.PhoneNum;
+            userStation.StationInfo = model.StationInfo;
+
+            return View("EditStation", userStation);
+        }
+
+        [HttpPost]
+        [Authorize]
+        public ActionResult EditStation(UserStation userStation)
+        {
+            Station station = new Station();
+            station.Id = userStation.Id;
+            station.TargetStation = userStation.TargetStation;
+            station.PhoneNum = userStation.PhoneNum;
+            station.StationInfo = userStation.StationInfo;
+
+            AccountEntities1 dc = new AccountEntities1();
+            dc.Entry(station).State = System.Data.Entity.EntityState.Modified;
+            try
+            {
+                dc.SaveChanges();
+            }
+            catch(Exception)
+            {
+                /* Input data is wrong > can not save to database */
+            }
+
+            return RedirectToAction("SelectClient");
+        }
+        #endregion
+
+        #region Delete Client's information
+        [Authorize]
+        public ActionResult Delete(int id)
+        {
+            AccountEntities1 dc = new AccountEntities1();
+            var model = dc.Stations.Find(id);
+            dc.Stations.Remove(model);
+            dc.SaveChanges();
+
+            return RedirectToAction("SelectClient");
         }
         #endregion
     }
