@@ -355,8 +355,6 @@
     <Content Include="vendor\bootstrap\css\bootstrap.min.css.map" />
     <Content Include="Views\_LayoutPage1.cshtml" />
     <Content Include="Views\Account\Login.cshtml" />
-    <Content Include="Views\Account\Create.cshtml" />
-    <Content Include="Views\Account\Error.cshtml" />
     <Content Include="Views\Account\Register.cshtml" />
     <Content Include="Views\Account\SendMessage.cshtml" />
     <Content Include="Views\_ViewStart.cshtml" />
@@ -364,6 +362,7 @@
     <Content Include="Views\Account\Logout.cshtml" />
     <Content Include="Views\Account\RegisterStation.cshtml" />
     <Content Include="Views\Account\SelectClient.cshtml" />
+    <Content Include="Views\Account\EditStation.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{3259AA49-8AA1-44D3-9025-A0B520596A8C}" />
