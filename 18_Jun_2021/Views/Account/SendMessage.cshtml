@@ -7,7 +7,7 @@
     <link href="~/css/util.css" rel="stylesheet" />
 }
 
-@using (Html.BeginForm())
+@using (Html.BeginForm("SendMessage", "Account", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
     @Html.AntiForgeryToken()
 
@@ -34,16 +34,12 @@
                     <span class="focus-input100" data-valmsg-for="MessageTitle" data-valmsg-replace="true" data-placeholder="&#xf207;"></span>
                 </div>
 
-                <div class="wrap-input100 validate-input">
-                    @Html.TextBox("MessageContent", null, new { @class = "input100", @placeholder = "Content", @data_val = "true" })
-                    <span class="focus-input100" data-valmsg-for="MessageContent" data-valmsg-replace="true" data-placeholder="&#xf207;"></span>
-                </div>
 
                 <br />
 
                 <div class="form-group">
                     <div class="col-md-10">
-                        <input type="file" name="fileUpLoad" id="fileUpLoad" style="width: 100%;" />
+                        <input type="file" name="postedFile" />
                     </div>
                 </div>
                 <br />

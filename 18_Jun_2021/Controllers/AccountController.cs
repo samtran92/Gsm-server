@@ -251,8 +251,7 @@ namespace _18_Jun_2021.Controllers
         }
         protected string SendMessageViaSerialPort(string message)
         {
-            string result = "";
-            int count = 0;
+            string result = "Result: ";
 
             switch (GMSDevice.desPortState)
             {
@@ -268,42 +267,52 @@ namespace _18_Jun_2021.Controllers
                             var v = dc.Stations.Where(a => a.TargetStation == station).FirstOrDefault();
                             if (v != null)
                             {
-                                result = SendMessageInterProcess(message, v.PhoneNum);
+                                result += station + "-" + SendMessageInterProcess(message, v.PhoneNum) + "\t";
                             }
                         }
-                        count++;
                     }
                     break;
                 default:
                     break;
             }
-            return (result + count.ToString());
+            return result;
         }
         #endregion
         #region  Save your message into database
-        protected void SaveMessageToDatabase(Message msg)
+        protected void SaveMessageToDatabase(Message msg, string message)
         {
             using (AccountEntities1 dc = new AccountEntities1())
             {
-                var v = dc.Messages.Where(a => a.MessageContent == msg.MessageContent).FirstOrDefault();
-
-                for (int idx = 0; idx < 2; idx++)
+                /* Save the parsing data from Word file */
+                msg.MessageContent = message;
+                var v = dc.Messages.Where(a => a.MessageContent == message).FirstOrDefault();
+                
+                if ((v == null))
                 {
-                    if ((v == null))
-                    {
-                        /* Save your message */
-                        dc.Messages.Add(msg);
-                    }
-                    else
-                    {
-                        /* Already exist this message */
-                        v.ToStation = string.Join("-", selectedStation);
-                        v.Date = DateTime.Now;
-                        v.PosterName = posterName;
-                        v.Count = (v.Count == null) ? (1) : (v.Count + 1);
-                        idx = 2; /* to ensure that entering this loop only 1 time */
-                    }
+                    /* Save your message */
+                    msg.Id = dc.Messages.Max(a => a.Id) + 1;
+                    msg.ToStation = string.Join("-", selectedStation);
+                    msg.Date = DateTime.Now;
+                    msg.PosterName = posterName;
+                    msg.Count = 1;
+                    dc.Messages.Add(msg);
+                }
+                else
+                {
+                    /* Already exist this message */
+                    v.ToStation = string.Join("-", selectedStation);
+                    v.Date = DateTime.Now;
+                    v.PosterName = posterName;
+                    v.Count = (v.Count == null) ? (1) : (v.Count + 1);
+                }
+                try
+                {
                     dc.SaveChanges();
+                }
+                catch (Exception)
+                {
+                    /* Can not save data due to validation error at some parameters
+                     * E.g. reach over the max of nvarchar(50) */
                 }
             }
         }
@@ -313,18 +322,29 @@ namespace _18_Jun_2021.Controllers
         [HttpGet]
         public ActionResult SendMessage()
         {
-            return View();
+            if (selectedStation == null)
+            {
+                ViewBag.Message = "Instruction: Let's select at least one Station!!!";
+                return RedirectToAction("SelectClient");
+            }
+            else
+            {
+                return View();
+            }
         }
 
         [HttpPost]
         [Authorize]
-        public ActionResult SendMessage(Message msg, HttpPostedFileBase fileUpLoad)
+        public ActionResult SendMessage(Message msg, HttpPostedFileBase postedFile)
         {
-            string result;
-            string message = ParseWordFile(fileUpLoad);
-            OpenSerialPort();
-            result = SendMessageViaSerialPort(message);
-            SaveMessageToDatabase(msg);
+            string result = "Error: No information at input words file!!!";
+            string message = ParseWordFile(postedFile);
+            if (message != null)
+            {
+                OpenSerialPort();
+                result = SendMessageViaSerialPort(message);
+                SaveMessageToDatabase(msg, message);
+            }
 
             ViewBag.Message = result;
             return View();
