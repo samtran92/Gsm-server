@@ -180,7 +180,6 @@ namespace _18_Jun_2021.Controllers
             WRITE_FAILED,
             READ_FAILED,
         }
-
         struct GMSDevice_type
         {
             public int totalPCPorts;
@@ -372,7 +371,7 @@ namespace _18_Jun_2021.Controllers
                 Thread.Sleep(100);
 
                 GMSDevice.desPort.Write(new byte[] { 26 }, 0, 1);
-                Thread.Sleep(100);
+                Thread.Sleep(20000);
 
                 var response = GMSDevice.desPort.ReadExisting();
                 if (response.Contains("ERROR"))
@@ -381,8 +380,8 @@ namespace _18_Jun_2021.Controllers
                 else
                     ;
                 //MessageBox.Show("SMS Send", "Messeage", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                GMSDevice.desPort.Close();
-                result = "OK";
+                //GMSDevice.desPort.Close();
+                result = PhoneNum.ToString();
             }
             catch (Exception ex)
             {
