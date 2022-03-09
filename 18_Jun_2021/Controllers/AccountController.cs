@@ -47,7 +47,7 @@ namespace _18_Jun_2021.Controllers
                         cookie.Expires = DateTime.Now.AddMinutes(timeout);
                         cookie.HttpOnly = true;
                         Response.Cookies.Add(cookie);
-                        return RedirectToAction("SelectClient");
+                        return RedirectToAction("StationDatabase");
                     }
                     else
                     {
@@ -248,14 +248,15 @@ namespace _18_Jun_2021.Controllers
 
             return (result);
         }
-        protected string SendMessageViaSerialPort(string message)
+        protected (string, string) SendMessageViaSerialPort(string message)
         {
-            string result = "Result: ";
+            string ListStationOK = "";
+            string ListStationNG = "";
 
             switch (GMSDevice.desPortState)
             {
                 case desPortState_en.OPEN:
-                    result = "Chua ket noi voi thiet bi";
+                    // result = "Chua ket noi voi thiet bi";
                     break;
                 case desPortState_en.CONNECT:
                 case desPortState_en.ALCONNECTED:
@@ -266,7 +267,14 @@ namespace _18_Jun_2021.Controllers
                             var v = dc.Stations.Where(a => a.TargetStation == station).FirstOrDefault();
                             if (v != null)
                             {
-                                result += station + "-" + SendMessageInterProcess(message, v.PhoneNum) + "\t";
+                                if(SendMessageInterProcess(message, v.PhoneNum) == "OK")
+                                {
+                                    ListStationOK = (ListStationOK == "") ? (station) : (ListStationOK + "-" + station);
+                                }
+                                else
+                                {
+                                    ListStationNG = (ListStationNG == "") ? (station) : (ListStationNG + "-" + station);
+                                }
                             }
                         }
                     }
@@ -274,35 +282,43 @@ namespace _18_Jun_2021.Controllers
                 default:
                     break;
             }
-            return result;
+            return (ListStationOK, ListStationNG);
         }
         #endregion
         #region  Save your message into database
-        protected void SaveMessageToDatabase(Message msg, string message)
+        protected void SaveMessageToDatabase(Message msg, string message, string ListStationOK, string ListStationNG)
         {
             using (AccountEntities1 dc = new AccountEntities1())
             {
-                /* Save the parsing data from Word file */
-                msg.MessageContent = message;
                 var v = dc.Messages.Where(a => a.MessageContent == message).FirstOrDefault();
                 
                 if ((v == null))
                 {
+                    /* Save the parsing data from Word file */
+                    msg.MessageContent  = message;
                     /* Save your message */
-                    msg.Id = dc.Messages.Max(a => a.Id) + 1;
-                    msg.ToStation = string.Join("-", selectedStation);
-                    msg.Date = DateTime.Now;
-                    msg.PosterName = posterName;
-                    msg.Count = 1;
+                    try { msg.Id        = dc.Messages.Max(a => a.Id) + 1; }
+                    catch (System.InvalidOperationException) { msg.Id = 1; }
+
+                    msg.ToStation       = string.Join("-", selectedStation);
+                    msg.StationOK       = (ListStationOK != "") ? ("All") : ("-");
+                    msg.StationNG       = (ListStationNG != "") ? (ListStationNG) : ("-");
+                    msg.Date            = DateTime.Now;
+                    msg.PosterName      = posterName;
+                    msg.Count           = 1;
                     dc.Messages.Add(msg);
                 }
                 else
                 {
+                    /* Save the parsing data from Word file */
+                    v.MessageContent    = message;
                     /* Already exist this message */
-                    v.ToStation = string.Join("-", selectedStation);
-                    v.Date = DateTime.Now;
-                    v.PosterName = posterName;
-                    v.Count = (v.Count == null) ? (1) : (v.Count + 1);
+                    v.ToStation         = string.Join("-", selectedStation);
+                    v.StationOK         = (ListStationOK != "") ? ("All") : ("-");
+                    v.StationNG         = (ListStationNG != "") ? (ListStationNG) : ("-");
+                    v.Date              = DateTime.Now;
+                    v.PosterName        = posterName;
+                    v.Count             = (v.Count == null) ? (1) : (v.Count + 1);
                 }
                 try
                 {
@@ -319,6 +335,7 @@ namespace _18_Jun_2021.Controllers
         #endregion
 
         [HttpGet]
+        [Authorize]
         public ActionResult SendMessage()
         {
             if (selectedStation == null)
@@ -341,12 +358,16 @@ namespace _18_Jun_2021.Controllers
             if (message != null)
             {
                 OpenSerialPort();
-                result = SendMessageViaSerialPort(message);
-                SaveMessageToDatabase(msg, message);
-            }
+                (string ListStationOK, string ListStationNG) = SendMessageViaSerialPort(message);
+                SaveMessageToDatabase(msg, message, ListStationOK, ListStationNG);
 
-            ViewBag.Message = result;
-            return View();
+                return RedirectToAction("StationDatabase");
+            }
+            else
+            {
+                ViewBag.Message = result;
+                return View();
+            }
         }
         public string SendSMS(string smstosend, string PhoneNum)
         {
@@ -425,6 +446,36 @@ namespace _18_Jun_2021.Controllers
         }
         #endregion
 
+        #region Result of communication with Client(s)
+
+        [HttpGet]
+        [Authorize]
+        public ActionResult SendMessageResult()
+        {
+            string SelectedId_str = RouteData.Values["Id"].ToString();
+            int SelectedId_int = int.Parse(SelectedId_str);
+
+            AccountEntities1 entities = new AccountEntities1();
+            var stationModels = entities.Messages.Where(a => a.Id == SelectedId_int).FirstOrDefault(); ;
+
+            ViewBag.Message     = stationModels.MessageContent;
+            ViewBag.Date        = stationModels.Date;
+            ViewBag.ToStation   = stationModels.ToStation;
+            ViewBag.StationOK   = stationModels.StationOK;
+            ViewBag.StationNG   = stationModels.StationNG;
+            ViewBag.Count       = stationModels.Count;
+            return View();
+        }
+
+        [HttpGet]
+        [Authorize]
+        public ActionResult StationDatabase()
+        {
+            AccountEntities1 entities = new AccountEntities1();
+            return View(entities.Messages.OrderByDescending(a => a.Date).ToList());
+        }
+
+        #endregion
         #region SelectClient
 
         [HttpGet]
