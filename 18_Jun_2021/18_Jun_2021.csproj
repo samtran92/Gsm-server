@@ -363,6 +363,8 @@
     <Content Include="Views\Account\RegisterStation.cshtml" />
     <Content Include="Views\Account\SelectClient.cshtml" />
     <Content Include="Views\Account\EditStation.cshtml" />
+    <Content Include="Views\Account\SendMessageResult.cshtml" />
+    <Content Include="Views\Account\StationDatabase.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{3259AA49-8AA1-44D3-9025-A0B520596A8C}" />

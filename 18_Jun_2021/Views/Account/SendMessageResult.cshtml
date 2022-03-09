@@ -1,7 +1,7 @@
-﻿@model _18_Jun_2021.Models.Account
+﻿@model _18_Jun_2021.Models.Message
 
 @{
-    ViewBag.Title = "Logout";
+    ViewBag.Title = "SendMessageResult";
     Layout = "~/Views/_LayoutPage1.cshtml";
     <link href="~/css/main.css" rel="stylesheet" />
     <link href="~/css/util.css" rel="stylesheet" />
@@ -9,7 +9,7 @@
 
 @using (Html.BeginForm())
 {
-    @RenderBody()
+
 
     <div class="limiter">
 
@@ -17,7 +17,7 @@
 
 
         <div class="wrap-login100">
-            <form action="Logout" method="post" class="login100-form validate-form">
+            <form action="SendMessageResult" method="post" class="login100-form validate-form">
                 <center>
                     <span class="">
                         <img src="~/images/icons/Icon RM.ico" />
@@ -26,19 +26,52 @@
                 </center>
 
                 <span class="login100-form-title p-b-34 p-t-27">
-                    Welcome back!
+                    Result
                 </span>
 
-                <span class="login100-form-title p-b-34 p-t-27">
-                    How it's going?
-                </span>
+                @if (ViewBag.Date != null)
+                {
+                    <p style="font-family: Poppins-Regular; font-size: 16px; color: #e5e5e5; line-height: 1.5; ">__ On @ViewBag.Date __</p>
+                }
+
+                @if (ViewBag.Message != null)
+                {
+                    <p style="font-family: Poppins-Regular; font-size: 16px; color: #e5e5e5; line-height: 1.5; ">__ Deliver a message __</p>
+                    <p style="font-family: revert; font-size: 16px; color: #fff; line-height: 1.5; ">"@ViewBag.Message"</p>
+                    <br />
+                }
+
+                <p style="font-family: Poppins-Regular; font-size: 16px; color: #e5e5e5; line-height: 1.5; ">__ Success at Station __</p>
+                @if (ViewBag.StationOK != null)
+                {
+                    <p style="font-family: revert; font-size: 16px; color: #fff; line-height: 1.5; ">"@ViewBag.StationOK"</p>
+                }
+                else
+                {
+                    <p style="font-family: revert; font-size: 16px; color: #fff; line-height: 1.5; ">"None"</p>
+                }
+
+                <br />
+                <p style="font-family: Poppins-Regular; font-size: 16px; color: #e5e5e5; line-height: 1.5; ">__ Fail at Station __</p>
+                @if ((ViewBag.StationNG != null) && (ViewBag.StationNG != "-"))
+                {
+                    <p style="font-family: revert; font-size: 16px; color: #fff; line-height: 1.5; ">"@ViewBag.StationNG"</p>
+                }
+                else
+                {
+                    <p style="font-family: revert; font-size: 16px; color: #fff; line-height: 1.5; ">"None"</p>
+                }
+
+                @if (ViewBag.Count != null)
+                {
+                    <br />
+                    <p style="font-family: Poppins-Regular; font-size: 16px; color: #e5e5e5; line-height: 1.5; ">__ Trial: @ViewBag.Count turns __</p>
+                }
 
             </form>
             <br />
             <div>
-                @Html.ActionLink("Logout", "Logout", "Account")
-                <br />
-                @Html.ActionLink("Or Continue with sending message to your Station", "StationDatabase", "Account")
+                @Html.ActionLink("BackToDatabase", "StationDatabase", "Account")
             </div>
         </div>
     </div>
