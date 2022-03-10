@@ -12,6 +12,37 @@
 {
     @Html.AntiForgeryToken()
 
+    <style type="text/css">
+        body {
+            font-family: Poppins-Regular;
+            font-size: 14px;
+            color: #e5e5e5;
+            line-height: 1.5;
+        }
+
+        .Grid {
+            border: 1px solid transparent;
+            border-collapse: collapse;
+        }
+
+            .Grid th {
+                background-color: transparent;
+                font-weight: bold;
+            }
+
+            .Grid th, .Grid td {
+                padding: 5px;
+                border: 1px solid transparent;
+            }
+
+            .Grid, .Grid table td {
+                border: 0px solid transparent;
+            }
+
+                .Grid th a, .Grid th a:visited {
+                    color: #333;
+                }
+    </style>
     <div class="limiter">
 
         <div class="container-login100" style="background-image: url('../../images/bg-01.jpg'); " />
@@ -48,7 +79,7 @@
                 <div>
                     @webGrid.GetHtml(
                     tableStyle: "table.gridtable",
-                    htmlAttributes: new { id = "checkableGrid" },
+                    htmlAttributes: new { id = "checkableGrid", @class = "Grid" },
                     columns: webGrid.Columns
                         (
                             //Here I am going to add checkbox column
