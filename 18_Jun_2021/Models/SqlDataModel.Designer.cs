@@ -1,4 +1,4 @@
-﻿// T4 code generation is enabled for model 'C:\Users\tnsqn\Downloads\GSM\18_Jun_2021_Update\20_Jun_2021\18_Jun_2021\18_Jun_2021\Models\SqlDataModel.edmx'. 
+﻿// T4 code generation is enabled for model 'D:\Freelancer\19_GSM\GSM_DOCUMENT_Private_for_TNV\software\Gsm-server\18_Jun_2021\Models\SqlDataModel.edmx'. 
 // To enable legacy code generation, change the value of the 'Code Generation Strategy' designer
 // property to 'Legacy ObjectContext'. This property is available in the Properties Window when the model
 // is open in the designer.

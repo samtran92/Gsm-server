@@ -18,6 +18,7 @@ namespace _18_Jun_2021.Controllers
     public class AccountController : Controller
     {
         static private string[] selectedStation;
+        public DBModelABC dc = new DBModelABC();
         #region Login
         static string posterName = "";
         // GET: Account
@@ -32,7 +33,7 @@ namespace _18_Jun_2021.Controllers
         public ActionResult Login(UserLogin acc, string ReturnUrl = "")
         {
             string message = "";
-            using (AccountEntities1 dc = new AccountEntities1())
+            //using (DBModelABC dc = new DBModelABC())
             {
                 var v = dc.Accounts.Where(a => a.Name == acc.Name).FirstOrDefault();
                 if (v != null)
@@ -101,7 +102,7 @@ namespace _18_Jun_2021.Controllers
         {
             string message = "";
 
-            using (AccountEntities1 dc = new AccountEntities1())
+            //using (DBModelABC dc = new DBModelABC())
             {
                 var v = dc.Accounts.Where(a => a.Name == acc.Name).FirstOrDefault();
                 if (v == null)
@@ -328,7 +329,7 @@ namespace _18_Jun_2021.Controllers
         #region  Save your message into database
         protected void SaveMessageToDatabase(Message msg)
         {
-            using (AccountEntities1 dc = new AccountEntities1())
+            //using (DBModelABC dc = new DBModelABC())
             {
                 var v = dc.Messages.Where(a => a.MessageContent == msg.MessageContent).FirstOrDefault();
 
@@ -457,7 +458,7 @@ namespace _18_Jun_2021.Controllers
         [Authorize]
         public ActionResult SelectClient()
         {
-            AccountEntities1 entities = new AccountEntities1();
+            DBModelABC entities = new DBModelABC();
             List<Station> stationModels = entities.Stations.OrderBy(a => a.TargetStation).ToList();
             return View(stationModels.ToList());
         }
@@ -497,7 +498,7 @@ namespace _18_Jun_2021.Controllers
         {
             string message = "";
 
-            using (AccountEntities1 dc = new AccountEntities1())
+            //using (DBModelABC dc = new DBModelABC())
             {
                 var v = dc.Stations.Where(a => a.TargetStation == station.TargetStation).FirstOrDefault();
                 if (v == null)
@@ -521,7 +522,7 @@ namespace _18_Jun_2021.Controllers
         [Authorize]
         public ActionResult EditStation(int id)
         {
-            AccountEntities1 dc = new AccountEntities1();
+            DBModelABC dc = new DBModelABC();
             var model = dc.Stations.Find(id);
 
             UserStation userStation = new UserStation();
@@ -543,7 +544,7 @@ namespace _18_Jun_2021.Controllers
             station.PhoneNum = userStation.PhoneNum;
             station.StationInfo = userStation.StationInfo;
 
-            AccountEntities1 dc = new AccountEntities1();
+            DBModelABC dc = new DBModelABC();
             dc.Entry(station).State = System.Data.Entity.EntityState.Modified;
             try
             {
@@ -562,7 +563,7 @@ namespace _18_Jun_2021.Controllers
         [Authorize]
         public ActionResult Delete(int id)
         {
-            AccountEntities1 dc = new AccountEntities1();
+            DBModelABC dc = new DBModelABC();
             var model = dc.Stations.Find(id);
             dc.Stations.Remove(model);
             dc.SaveChanges();
