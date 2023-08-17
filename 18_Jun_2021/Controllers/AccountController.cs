@@ -194,7 +194,7 @@ namespace _18_Jun_2021.Controllers
         static GMSDevice_type GMSDevice;
         SelectListItem drPorts = new SelectListItem()
         {
-            Text = "COM7",
+            Text = "COM3",
             Value = "1",
             Selected = true
         };
@@ -391,7 +391,7 @@ namespace _18_Jun_2021.Controllers
                 //serialPort.WriteLine("AT+CMGS=\"" + textBox1.Text + "\""+ Environment.NewLine);
                 //GMSDevice.desPort.WriteLine("AT+CMGS=\"" + "+84977413768" + "\"" + Environment.NewLine);
                 //GMSDevice.desPort.WriteLine("AT+CMGS=\"" + "+84764316794" + "\"" + Environment.NewLine);      //Số đăng ký gởi nhiều tin nhắn
-                GMSDevice.desPort.WriteLine("AT+CMGS=\"" + "+84932587508" + "\"" + Environment.NewLine);        //Sim Mobile nhận
+                GMSDevice.desPort.WriteLine("AT+CMGS=\"" + "+84764316794" + "\"" + Environment.NewLine);        //Sim Mobile nhận
                 Thread.Sleep(100);
 
                 GMSDevice.desPort.WriteLine(smstosend + Environment.NewLine);
@@ -429,7 +429,7 @@ namespace _18_Jun_2021.Controllers
 
             //foreach (var file in files)
             {
-                if (fileUpLoad.ContentLength > 0)
+                if ((fileUpLoad != null) && (fileUpLoad.ContentLength > 0))
                 {
                     var fileName = Path.GetFileName(fileUpLoad.FileName);
                     var filePath = Path.Combine(Server.MapPath("~/Files"), fileName);
